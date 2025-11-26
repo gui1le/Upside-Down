@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Laura - Upside Down</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --c-red: #ff1100;
+            --c-green: #00ff00;
+            --c-blue: #00eeff;
+            --c-yellow: #ffea00;
+            --c-purple: #c300ff;
+            --c-pink: #ff009d;
+        }
+        @keyframes christmas-mood {
+            0% { background-color: #3b2c01; }
+            50% { background-color: #0e0120; }
+            100% { background-color: #011e36; }
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            animation: christmas-mood 10s infinite alternate ease-in-out;
+            font-family: 'Permanent Marker', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: #ddd;
+            position: relative;
+        }
+        .particle {
+            position: absolute;
+            bottom: -10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.7; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
+            z-index: 2;
+        }
+        .wall {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 900px;
+            position: relative;
+            padding: 20px;
+            z-index: 2;
+        }
+        .wire {
+            position: absolute;
+            top: 35px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+            border-top: 3px solid #000;
+            border-radius: 50%;
+            z-index: 0;
+            transform: rotate(-1deg);
+            opacity: 0.6;
+        }
+        .wire-2 { top: 135px; transform: rotate(1deg); }
+        .wire-3 { top: 235px; transform: rotate(-0.5deg); }
+
+        .letter-box {
+            width: 11%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bulb {
+            width: 20px;
+            height: 35px;
+            background-color: #333;
+            border-radius: 50% 50% 40% 40%;
+            margin-bottom: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: inset -2px -2px 5px rgba(0,0,0,0.5);
+        }
+
+        .bulb::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 8px;
+            background-color: #111;
+        }
+
+        .char {
+            font-size: 2.5em;
+            color: #eee;
+            opacity: 0.5;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .bulb.on {
+            box-shadow: 0 0 25px 8px currentColor, inset 0 0 10px rgba(255,255,255,0.8);
+            background-color: currentColor;
+            z-index: 10;
+        }
+        
+        .letter-box.lit .char {
+            opacity: 1;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            color: #fff;
+        }
+        .bulb.c1 { color: var(--c-red); }
+        .bulb.c2 { color: var(--c-blue); }
+        .bulb.c3 { color: var(--c-green); }
+        .bulb.c4 { color: var(--c-yellow); }
+        .bulb.c5 { color: var(--c-purple); }
+        .bulb.c6 { color: var(--c-pink); }
+        #decoded-message {
+            margin-top: 10px;
+            font-size: 3em;
+            letter-spacing: 15px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+            z-index: 2;
+            text-align: center;
+            min-height: 1.5em;
+        }
+
+        #final-message {
+            margin-top: 30px;
+            font-size: 1.5em;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+            max-width: 80%;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 2;
+        }
+        #final-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .letter-box { width: 14%; margin-bottom: 20px; }
+            .char { font-size: 1.8em; }
+            .bulb { width: 15px; height: 25px; }
+            .wire { display: none; }
+            #decoded-message { font-size: 2em; letter-spacing: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particles-container"></div>
+
+    <h1>DESCIFRA EL MENSAJE</h1>
+
+    <div class="wall">
+        <div class="wire"></div>
+        <div class="wire wire-2"></div>
+        <div class="wire wire-3"></div>
+
+        <div class="letter-box" id="box-a"><div class="bulb c1" id="light-a"></div><div class="char">A</div></div>
+        <div class="letter-box" id="box-b"><div class="bulb c2" id="light-b"></div><div class="char">B</div></div>
+        <div class="letter-box" id="box-c"><div class="bulb c3" id="light-c"></div><div class="char">C</div></div>
+        <div class="letter-box" id="box-d"><div class="bulb c4" id="light-d"></div><div class="char">D</div></div>
+        <div class="letter-box" id="box-e"><div class="bulb c5" id="light-e"></div><div class="char">E</div></div>
+        <div class="letter-box" id="box-f"><div class="bulb c6" id="light-f"></div><div class="char">F</div></div>
+        <div class="letter-box" id="box-g"><div class="bulb c1" id="light-g"></div><div class="char">G</div></div>
+        <div class="letter-box" id="box-h"><div class="bulb c2" id="light-h"></div><div class="char">H</div></div>
+        <div class="letter-box" id="box-i"><div class="bulb c3" id="light-i"></div><div class="char">I</div></div>
+        <div class="letter-box" id="box-j"><div class="bulb c4" id="light-j"></div><div class="char">J</div></div>
+        <div class="letter-box" id="box-k"><div class="bulb c5" id="light-k"></div><div class="char">K</div></div>
+        <div class="letter-box" id="box-l"><div class="bulb c6" id="light-l"></div><div class="char">L</div></div>
+        <div class="letter-box" id="box-m"><div class="bulb c1" id="light-m"></div><div class="char">M</div></div>
+        <div class="letter-box" id="box-n"><div class="bulb c2" id="light-n"></div><div class="char">N</div></div>
+        <div class="letter-box" id="box-o"><div class="bulb c3" id="light-o"></div><div class="char">O</div></div>
+        <div class="letter-box" id="box-p"><div class="bulb c4" id="light-p"></div><div class="char">P</div></div>
+        <div class="letter-box" id="box-q"><div class="bulb c5" id="light-q"></div><div class="char">Q</div></div>
+        <div class="letter-box" id="box-r"><div class="bulb c6" id="light-r"></div><div class="char">R</div></div>
+        <div class="letter-box" id="box-s"><div class="bulb c1" id="light-s"></div><div class="char">S</div></div>
+        <div class="letter-box" id="box-t"><div class="bulb c2" id="light-t"></div><div class="char">T</div></div>
+        <div class="letter-box" id="box-u"><div class="bulb c3" id="light-u"></div><div class="char">U</div></div>
+        <div class="letter-box" id="box-v"><div class="bulb c4" id="light-v"></div><div class="char">V</div></div>
+        <div class="letter-box" id="box-w"><div class="bulb c5" id="light-w"></div><div class="char">W</div></div>
+        <div class="letter-box" id="box-x"><div class="bulb c6" id="light-x"></div><div class="char">X</div></div>
+        <div class="letter-box" id="box-y"><div class="bulb c1" id="light-y"></div><div class="char">Y</div></div>
+        <div class="letter-box" id="box-z"><div class="bulb c2" id="light-z"></div><div class="char">Z</div></div>
+    </div>
+
+    <div id="decoded-message">_ _ _ _ _ _ _ _ _</div>
+
+    <div id="final-message">
+        <strong>Feliz casi-cumple mes niña 😋</strong><br>
+        Tú eres mi conexión a la realidad.<br>
+        Listos para ver el maratón. ❤️
+    </div>
+
+    <script>
+        function createParticles() {
+            const container = document.body;
+            const particleCount = 50;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                const duration = Math.random() * 10 + 5;
+                particle.style.animation = `floatUp ${duration}s linear infinite`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(particle);
+            }
+        }
+        const messageToSpell = ['s', 'o', 'u', 'l', 'm', 'a', 't', 'e', 's'];
+        const startHour = 9; 
+        const hoursPerLetter = 1;
+
+        function checkLights() {
+            const now = new Date();
+            const currentHour = now.getHours(); 
+
+            let hoursPassed = currentHour - startHour;
+            
+            if (hoursPassed < 0) hoursPassed = -1;
+
+            let lettersActiveCount = Math.floor(hoursPassed / hoursPerLetter) + 1;
+
+            if (lettersActiveCount > messageToSpell.length) {
+                lettersActiveCount = messageToSpell.length;
+            }
+            if (hoursPassed < 0) {
+                lettersActiveCount = 0;
+            }
+
+            for (let i = 0; i < lettersActiveCount; i++) {
+                const letterChar = messageToSpell[i];
+                const bulbElement = document.getElementById('light-' + letterChar);
+                const boxElement = document.getElementById('box-' + letterChar);
+                
+                if (bulbElement && boxElement) {
+                    bulbElement.classList.add('on');
+                    boxElement.classList.add('lit');
+                }
+            }
+
+            let decodedString = "";
+            for (let i = 0; i < messageToSpell.length; i++) {
+                if (i < lettersActiveCount) {
+                    decodedString += messageToSpell[i].toUpperCase() + " ";
+                } else {
+                    decodedString += "_ ";
+                }
+            }
+            document.getElementById('decoded-message').textContent = decodedString;
+
+            if (lettersActiveCount === messageToSpell.length) {
+                document.getElementById('final-message').classList.add('show');
+            }
+        }
+
+        createParticles();
+        checkLights();
+        setInterval(checkLights, 60000);
+    </script>
+</body>
+</html>
